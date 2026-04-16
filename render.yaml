@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: ddr-generator
+    runtime: docker
+    repo: https://github.com/priya21032002/DDR-Generator.git
+    branch: main
+    plan: free
+    envVars:
+      - key: GROQ_API_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
