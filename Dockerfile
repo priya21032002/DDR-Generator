@@ -2,13 +2,20 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install system dependencies for PyMuPDF and Tesseract
+# Install system dependencies for PyMuPDF, Tesseract, and building native extensions
 RUN apt-get update && apt-get install -y --no-install-recommends \
     tesseract-ocr \
+    build-essential \
+    libffi-dev \
+    libssl-dev \
+    cargo \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
+
+# Remove build tools to slim down the final image
+RUN apt-get purge -y --auto-remove build-essential cargo
 
 COPY src/ src/
 COPY static/ static/
