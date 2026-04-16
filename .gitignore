@@ -1,0 +1,35 @@
+# Environment & secrets
+.env
+.env.local
+.env.production
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+
+# Generated outputs (large, per-run)
+outputs/
+uploads/
+
+# IDE & tooling
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+*.swp
+.vscode/
+
+# Claude Code / vibe coding artifacts
+.claude/
+CLAUDE.md
+mcp_servers/
+test_render.py
+
+# OS
+Thumbs.db
+.DS_Store

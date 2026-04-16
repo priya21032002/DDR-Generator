@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DDR Generator</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.1);
+            padding: 40px;
+            max-width: 520px;
+            width: 100%;
+        }
+        h1 {
+            font-size: 24px;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+        label {
+            display: block;
+            font-weight: 600;
+            color: #34495e;
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+        input[type="file"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            cursor: pointer;
+            background: #f8f9fa;
+        }
+        input[type="file"]:hover {
+            border-color: #3498db;
+            background: #eef6fd;
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover { background: #2980b9; }
+        button:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+        }
+        #status {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 8px;
+            display: none;
+            font-size: 14px;
+        }
+        #status.loading {
+            display: block;
+            background: #fff3cd;
+            color: #856404;
+        }
+        #status.success {
+            display: block;
+            background: #d4edda;
+            color: #155724;
+        }
+        #status.error {
+            display: block;
+            background: #f8d7da;
+            color: #721c24;
+        }
+        #status a {
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>DDR Generator</h1>
+        <p class="subtitle">Upload inspection and thermal reports to generate a Detailed Diagnostic Report.</p>
+
+        <form id="ddrForm" enctype="multipart/form-data">
+            <label for="inspection">Inspection Report (PDF)</label>
+            <input type="file" id="inspection" name="inspection_pdf" accept=".pdf" required>
+
+            <label for="thermal">Thermal Report (PDF)</label>
+            <input type="file" id="thermal" name="thermal_pdf" accept=".pdf" required>
+
+            <button type="submit" id="submitBtn">Generate DDR Report</button>
+        </form>
+
+        <div id="status"></div>
+    </div>
+
+    <script>
+        const form = document.getElementById('ddrForm');
+        const status = document.getElementById('status');
+        const submitBtn = document.getElementById('submitBtn');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(form);
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Generating...';
+            status.className = 'loading';
+            status.style.display = 'block';
+            status.innerHTML = 'Processing PDFs through 5-stage pipeline. This may take 1-2 minutes...';
+
+            try {
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (!response.ok) {
+                    const err = await response.json();
+                    throw new Error(err.detail || 'Generation failed');
+                }
+
+                const result = await response.json();
+                status.className = 'success';
+                status.innerHTML = `
+                    DDR Report generated successfully!<br>
+                    <a href="${result.html_report}" target="_blank">View HTML Report</a> |
+                    <a href="${result.pdf_report}" target="_blank">Download PDF Report</a><br>
+                    <small>Run ID: ${result.run_id}</small>
+                `;
+            } catch (err) {
+                status.className = 'error';
+                status.innerHTML = `Error: ${err.message}`;
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Generate DDR Report';
+            }
+        });
+    </script>
+</body>
+</html>

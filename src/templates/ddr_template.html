@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detailed Diagnostic Report</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm 2cm 2.5cm 2cm;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            font-size: 10.5pt;
+            line-height: 1.65;
+            color: #2d3436;
+            background: #fff;
+        }
+
+        /* ── Cover Page ───────────────────────────────── */
+        .cover {
+            page-break-after: always;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(160deg, #0c2340 0%, #1a5276 50%, #2980b9 100%);
+            color: white;
+            padding: 60px 50px;
+            position: relative;
+        }
+
+        .cover::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #e74c3c, #f39c12, #27ae60, #2980b9);
+        }
+
+        .cover-icon {
+            font-size: 48pt;
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+
+        .cover h1 {
+            font-size: 32pt;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .cover .subtitle {
+            font-size: 14pt;
+            font-weight: 300;
+            opacity: 0.85;
+            margin-bottom: 40px;
+        }
+
+        .cover-meta {
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            padding: 24px 40px;
+            margin-top: 10px;
+        }
+
+        .cover-meta p {
+            font-size: 11pt;
+            margin: 4px 0;
+            opacity: 0.9;
+        }
+
+        .cover-meta .report-id {
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 10pt;
+            opacity: 0.65;
+            margin-top: 12px;
+        }
+
+        /* ── Table of Contents ────────────────────────── */
+        .toc {
+            page-break-after: always;
+            padding: 40px 0;
+        }
+
+        .toc h2 {
+            font-size: 18pt;
+            color: #0c2340;
+            margin-bottom: 24px;
+            padding-bottom: 8px;
+            border-bottom: 3px solid #2980b9;
+        }
+
+        .toc-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .toc-list li {
+            display: flex;
+            align-items: baseline;
+            padding: 10px 0;
+            border-bottom: 1px dotted #ddd;
+            font-size: 11pt;
+        }
+
+        .toc-num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            background: #2980b9;
+            color: white;
+            border-radius: 50%;
+            font-size: 10pt;
+            font-weight: 700;
+            margin-right: 14px;
+            flex-shrink: 0;
+        }
+
+        .toc-title {
+            color: #2d3436;
+            font-weight: 500;
+        }
+
+        /* ── Section Headings ─────────────────────────── */
+        .section {
+            margin-bottom: 20px;
+        }
+
+        .section-heading {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 30px 0 16px 0;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #2980b9;
+        }
+
+        .section-num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: #2980b9;
+            color: white;
+            border-radius: 50%;
+            font-size: 13pt;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .section-title {
+            font-size: 16pt;
+            font-weight: 700;
+            color: #0c2340;
+            margin: 0;
+        }
+
+        /* ── Summary Box ──────────────────────────────── */
+        .summary-box {
+            background: #f0f7ff;
+            border-left: 5px solid #2980b9;
+            padding: 18px 22px;
+            margin: 12px 0 20px 0;
+            border-radius: 0 8px 8px 0;
+            font-size: 11pt;
+            line-height: 1.75;
+        }
+
+        /* ── Area Cards ───────────────────────────────── */
+        .area-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            margin: 16px 0;
+            overflow: hidden;
+            page-break-inside: avoid;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        }
+
+        .area-header {
+            background: linear-gradient(135deg, #f8f9fa, #eef1f5);
+            padding: 14px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .area-name {
+            font-size: 13pt;
+            font-weight: 700;
+            color: #0c2340;
+        }
+
+        .area-body {
+            padding: 16px 20px;
+        }
+
+        .area-body ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .area-body li {
+            margin-bottom: 10px;
+            line-height: 1.65;
+        }
+
+        /* ── Severity Badges ──────────────────────────── */
+        .severity-badge {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 8.5pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .severity-low { background: #d5f5e3; color: #1e8449; }
+        .severity-moderate { background: #fef9e7; color: #b7950b; border: 1px solid #f0e68c; }
+        .severity-high { background: #fdedec; color: #c0392b; border: 1px solid #f5b7b1; }
+        .severity-critical { background: #922b21; color: white; }
+
+        /* ── Image Grid ───────────────────────────────── */
+        .image-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 14px;
+        }
+
+        .image-grid figure {
+            flex: 0 0 calc(50% - 6px);
+            max-width: calc(50% - 6px);
+            margin: 0;
+        }
+
+        .image-grid img {
+            max-width: 240px;
+            height: auto;
+            max-height: 220px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            background: #fafafa;
+        }
+
+        .image-grid figcaption {
+            font-size: 8.5pt;
+            color: #666;
+            text-align: center;
+            margin-top: 5px;
+            line-height: 1.3;
+            font-style: italic;
+        }
+
+        .image-unavailable {
+            background: #f8f9fa;
+            border: 2px dashed #ccc;
+            padding: 18px;
+            text-align: center;
+            color: #888;
+            font-style: italic;
+            border-radius: 6px;
+            margin-top: 12px;
+            font-size: 10pt;
+        }
+
+        /* ── Root Cause Box ───────────────────────────── */
+        .root-cause {
+            background: #fef9e7;
+            border-left: 5px solid #f39c12;
+            padding: 18px 22px;
+            border-radius: 0 8px 8px 0;
+            margin: 12px 0;
+            line-height: 1.75;
+        }
+
+        /* ── Severity Assessment ──────────────────────── */
+        .severity-box {
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 22px;
+            margin: 12px 0;
+        }
+
+        .severity-overall {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .severity-overall-label {
+            font-size: 13pt;
+            font-weight: 700;
+            color: #0c2340;
+        }
+
+        .severity-overall .severity-badge {
+            font-size: 10pt;
+            padding: 6px 18px;
+        }
+
+        .severity-reasoning {
+            line-height: 1.75;
+            color: #444;
+        }
+
+        /* ── Actions Table ────────────────────────────── */
+        .actions-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 12px 0;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .actions-table th {
+            background: #0c2340;
+            color: white;
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 10pt;
+        }
+
+        .actions-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #eee;
+            font-size: 10pt;
+            vertical-align: top;
+        }
+
+        .actions-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .actions-table tr:nth-child(even) td {
+            background: #f8f9fa;
+        }
+
+        .priority-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 8.5pt;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .priority-immediate { background: #fdedec; color: #c0392b; }
+        .priority-short-term { background: #fef9e7; color: #b7950b; }
+        .priority-long-term { background: #d5f5e3; color: #1e8449; }
+
+        /* ── Notes & Missing Lists ────────────────────── */
+        .info-list {
+            padding-left: 20px;
+            margin: 8px 0;
+        }
+
+        .info-list li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        .info-box {
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin: 10px 0;
+        }
+
+        .missing-item {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        .missing-bullet {
+            color: #e74c3c;
+            font-weight: 700;
+        }
+
+        /* ── Footer ───────────────────────────────────── */
+        .footer {
+            margin-top: 40px;
+            padding-top: 16px;
+            border-top: 2px solid #e0e0e0;
+            text-align: center;
+        }
+
+        .footer p {
+            font-size: 8.5pt;
+            color: #999;
+            margin: 2px 0;
+        }
+
+        .disclaimer {
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin: 20px 0;
+            font-size: 9pt;
+            color: #666;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <!-- ═══ Cover Page ═══ -->
+    <div class="cover">
+        <div class="cover-icon">&#9881;</div>
+        <h1>Detailed Diagnostic Report</h1>
+        <div class="subtitle">Property Health Assessment &amp; Analysis</div>
+        <div class="cover-meta">
+            <p><strong>Report Type:</strong> Combined Visual Inspection &amp; Thermal Imaging Analysis</p>
+            <p><strong>Assessment Scope:</strong> Structural integrity, moisture ingress, plumbing &amp; waterproofing</p>
+            <p class="report-id">Report ID: {{ run_id }}</p>
+        </div>
+    </div>
+
+    <!-- ═══ Table of Contents ═══ -->
+    <div class="toc">
+        <h2>Table of Contents</h2>
+        <ol class="toc-list">
+            <li><span class="toc-num">1</span><span class="toc-title">Property Issue Summary</span></li>
+            <li><span class="toc-num">2</span><span class="toc-title">Area-wise Observations ({{ report.area_observations | length }} areas)</span></li>
+            <li><span class="toc-num">3</span><span class="toc-title">Probable Root Cause</span></li>
+            <li><span class="toc-num">4</span><span class="toc-title">Severity Assessment</span></li>
+            <li><span class="toc-num">5</span><span class="toc-title">Recommended Actions ({{ report.recommended_actions | length }} items)</span></li>
+            <li><span class="toc-num">6</span><span class="toc-title">Additional Notes</span></li>
+            <li><span class="toc-num">7</span><span class="toc-title">Missing or Unclear Information</span></li>
+        </ol>
+    </div>
+
+    <!-- ═══ Section 1: Property Issue Summary ═══ -->
+    <div class="section">
+        <div class="section-heading">
+            <span class="section-num">1</span>
+            <h2 class="section-title">Property Issue Summary</h2>
+        </div>
+        <div class="summary-box">
+            <p>{{ report.property_issue_summary }}</p>
+        </div>
+    </div>
+
+    <!-- ═══ Section 2: Area-wise Observations ═══ -->
+    <div class="section">
+        <div class="section-heading">
+            <span class="section-num">2</span>
+            <h2 class="section-title">Area-wise Observations</h2>
+        </div>
+
+        {% for area in report.area_observations %}
+        <div class="area-card">
+            <div class="area-header">
+                <span class="area-name">{{ area.area_name }}</span>
+                <span class="severity-badge severity-{{ area.severity.value|lower }}">
+                    {{ area.severity.value }}
+                </span>
+            </div>
+            <div class="area-body">
+                <ul>
+                    {% for finding in area.findings %}
+                    <li>{{ finding }}</li>
+                    {% endfor %}
+                </ul>
+
+                {% if area.image_refs %}
+                <div class="image-grid">
+                    {% for img in area.image_refs %}
+                    <figure>
+                        <img src="{{ img.file_path }}" alt="{{ img.caption or area.area_name }}">
+                        {% if img.caption %}
+                        <figcaption>{{ img.caption }}</figcaption>
+                        {% endif %}
+                    </figure>
+                    {% endfor %}
+                </div>
+                {% elif area.image_status %}
+                <div class="image-unavailable">{{ area.image_status }}</div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- ═══ Section 3: Probable Root Cause ═══ -->
+    <div class="section">
+        <div class="section-heading">
+            <span class="section-num">3</span>
+            <h2 class="section-title">Probable Root Cause</h2>
+        </div>
+        <div class="root-cause">
+            {{ report.probable_root_cause | replace('\n', '<br>') }}
+        </div>
+    </div>
+
+    <!-- ═══ Section 4: Severity Assessment ═══ -->
+    <div class="section">
+        <div class="section-heading">
+            <span class="section-num">4</span>
+            <h2 class="section-title">Severity Assessment</h2>
+        </div>
+        <div class="severity-box">
+            <div class="severity-overall">
+                <span class="severity-overall-label">Overall Assessment:</span>
+                <span class="severity-badge severity-{{ report.severity_assessment.overall.value|lower }}">
+                    {{ report.severity_assessment.overall.value }}
+                </span>
+            </div>
+            <p class="severity-reasoning"><strong>Reasoning:</strong> {{ report.severity_assessment.reasoning }}</p>
+        </div>
+
+        <!-- Severity Summary Table -->
+        <table class="actions-table" style="margin-top: 16px;">
+            <thead>
+                <tr>
+                    <th style="width: 50%">Area</th>
+                    <th style="width: 25%">Severity</th>
+                    <th style="width: 25%">Findings Count</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for area in report.area_observations %}
+                <tr>
+                    <td>{{ area.area_name }}</td>
+                    <td>
+                        <span class="severity-badge severity-{{ area.severity.value|lower }}">
+                            {{ area.severity.value }}
+                        </span>
+                    </td>
+                    <td>{{ area.findings | length }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ═══ Section 5: Recommended Actions ═══ -->
+    <div class="section">
+        <div class="section-heading">
+            <span class="section-num">5</span>
+            <h2 class="section-title">Recommended Actions</h2>
+        </div>
+        <table class="actions-table">
+            <thead>
+                <tr>
+                    <th style="width: 5%">#</th>
+                    <th style="width: 70%">Recommended Action</th>
+                    <th style="width: 25%">Priority</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for action in report.recommended_actions %}
+                <tr>
+                    <td><strong>{{ loop.index }}</strong></td>
+                    <td>{{ action.action }}</td>
+                    <td>
+                        <span class="priority-badge priority-{{ action.priority }}">
+                            {{ action.priority | replace("-", " ") | title }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ═══ Section 6: Additional Notes ═══ -->
+    <div class="section">
+        <div class="section-heading">
+            <span class="section-num">6</span>
+            <h2 class="section-title">Additional Notes</h2>
+        </div>
+        {% if report.additional_notes %}
+        <div class="info-box">
+            <ul class="info-list">
+                {% for note in report.additional_notes %}
+                <li>{{ note }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% else %}
+        <div class="info-box">
+            <p>No additional notes or conflicts identified.</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- ═══ Section 7: Missing or Unclear Information ═══ -->
+    <div class="section">
+        <div class="section-heading">
+            <span class="section-num">7</span>
+            <h2 class="section-title">Missing or Unclear Information</h2>
+        </div>
+        {% if report.missing_or_unclear %}
+        <div class="info-box">
+            {% for item in report.missing_or_unclear %}
+            <div class="missing-item">
+                <span class="missing-bullet">&#10007;</span>
+                <span>{{ item }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="info-box">
+            <p>All expected information was available in the source documents.</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- ═══ Disclaimer ═══ -->
+    <div class="disclaimer">
+        <strong>Disclaimer:</strong> This report is based on visual inspection observations and
+        thermal imaging data provided in the source documents. It is not an exhaustive structural
+        audit. The assessment addresses only those conditions that were documented in the inspection
+        and thermal reports. Hidden defects, inaccessible areas, or conditions not captured in the
+        source documents are outside the scope of this report. A qualified structural engineer
+        should be consulted for any structural concerns identified herein.
+    </div>
+
+    <!-- ═══ Footer ═══ -->
+    <div class="footer">
+        <p>This report was generated from inspection and thermal imaging data using AI-assisted analysis.</p>
+        <p>Report ID: {{ run_id }} | Generated by DDR Generator</p>
+    </div>
+</body>
+</html>
